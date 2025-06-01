@@ -1,7 +1,7 @@
 const Book = require('../models/Book');
 const Review = require('../models/Review');
 
-// Task 1 & 10: Get all books (Using async callback function)
+// Task 1: Get all books (Using async callback function)
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find().populate('reviews');
@@ -11,7 +11,7 @@ const getAllBooks = async (req, res) => {
   }
 };
 
-// Task 2 & 11: Get books by ISBN (Using Promises)
+// Task 2: Get books by ISBN (Using Promises)
 const getBookByISBN = (req, res) => {
   Book.findOne({ isbn: req.params.isbn })
     .populate('reviews')
@@ -24,7 +24,7 @@ const getBookByISBN = (req, res) => {
     .catch(error => res.status(500).json({ message: error.message }));
 };
 
-// Task 3 & 12: Get books by Author
+// Task 3: Get books by Author
 const getBooksByAuthor = async (req, res) => {
   try {
     const books = await Book.find({ author: new RegExp(req.params.author, 'i') }).populate('reviews');
@@ -37,7 +37,7 @@ const getBooksByAuthor = async (req, res) => {
   }
 };
 
-// Task 4 & 13: Get books by Title
+// Task 4: Get books by Title
 const getBooksByTitle = async (req, res) => {
   try {
     const books = await Book.find({ title: new RegExp(req.params.title, 'i') }).populate('reviews');
@@ -109,6 +109,109 @@ const deleteReview = async (req, res) => {
   }
 };
 
+// Task 10: Get all books (Using async/await)
+const getAllBooksAsync = async (req, res) => {
+  try {
+    const books = await Book.find().populate('reviews');
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Task 10: Get all books (Using callback function)
+const getAllBooksCallback = (req, res) => {
+  Book.find({}).populate('reviews')
+    .then(books => res.json(books))
+    .catch(err => res.status(500).json({ message: err.message }));
+};
+
+
+
+// Task 11: Search by ISBN (Async/Await)
+const getBookByISBNAsync = async (req, res) => {
+  try {
+    const book = await Book.findOne({ isbn: req.params.isbn }).populate('reviews');
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    res.json(book);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Task 11: Search by ISBN (Callback)
+const getBookByISBNCallback = (req, res) => {
+  Book.findOne({ isbn: req.params.isbn })
+    .populate('reviews')
+    .then(book => {
+      if (!book) {
+        return res.status(404).json({ message: 'Book not found' });
+      }
+      res.json(book);
+    })
+    .catch(err => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
+// Task 12: Search by Author (Async/Await)
+const getBooksByAuthorAsync = async (req, res) => {
+  try {
+    const books = await Book.find({ author: new RegExp(req.params.author, 'i') }).populate('reviews');
+    if (books.length === 0) {
+      return res.status(404).json({ message: 'No books found by this author' });
+    }
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Task 12: Search by Author (Callback)
+const getBooksByAuthorCallback = (req, res) => {
+  Book.find({ author: new RegExp(req.params.author, 'i') })
+    .populate('reviews')
+    .then(books => {
+      if (books.length === 0) {
+        return res.status(404).json({ message: 'No books found by this author' });
+      }
+      res.json(books);
+    })
+    .catch(err => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
+// Task 13: Search by Title (Async/Await)
+const getBooksByTitleAsync = async (req, res) => {
+  try {
+    const books = await Book.find({ title: new RegExp(req.params.title, 'i') }).populate('reviews');
+    if (books.length === 0) {
+      return res.status(404).json({ message: 'No books found with this title' });
+    }
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Task 13: Search by Title (Callback)
+const getBooksByTitleCallback = (req, res) => {
+  Book.find({ title: new RegExp(req.params.title, 'i') })
+    .populate('reviews')
+    .then(books => {
+      if (books.length === 0) {
+        return res.status(404).json({ message: 'No books found with this title' });
+      }
+      res.json(books);
+    })
+    .catch(err => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
 module.exports = {
   getAllBooks,
   getBookByISBN,
@@ -117,4 +220,12 @@ module.exports = {
   getBookReviews,
   addOrModifyReview,
   deleteReview,
+  getAllBooksAsync,
+  getAllBooksCallback,
+  getBookByISBNAsync,
+  getBookByISBNCallback,
+  getBooksByAuthorAsync,
+  getBooksByAuthorCallback,
+  getBooksByTitleAsync,
+  getBooksByTitleCallback
 };
